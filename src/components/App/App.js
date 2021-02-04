@@ -1,17 +1,14 @@
 import React from 'react';
 import './App.css';
-import { useSelector } from 'react-redux';
 import { HashRouter as Router, Route } from 'react-router-dom';
 
 // CUSTOM COMPONENTS
 import AppLayout from '../AppLayout/AppLayout';
 import Home from '../pages/Home/Home';
 import Details from '../pages/Details/Details';
-import Edit from '../pages/Edit/Edit';
+// import Edit from '../pages/Edit/Edit';
 
 function App() {
-  const secondReducer = useSelector((store) => store.secondReducer);
-
   return (
     <Router>
       <AppLayout>
@@ -19,9 +16,9 @@ function App() {
         <Route exact path="/creature-details/:id">
           <Details />
         </Route>
-        <Route exact path="/creature-edit/:id">
+        {/* <Route exact path="/creature-edit/:id">
           <Edit />
-        </Route>
+        </Route> */}
       </AppLayout>
     </Router>
   );

@@ -18,7 +18,7 @@ function Details(props) {
       type: 'GET_CREATURE_DETAILS',
       payload: parseInt(urlParams.id),
     });
-  }, [dispatch]);
+  }, [dispatch, urlParams]);
 
   const handleClickBACK = (event) => {
     history.push('/');
