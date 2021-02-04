@@ -3,11 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import mapStoreToProps from '../../redux/mapStoreToProps';
 
 function CreatureAttributes(props) {
-  // ON MOUNT OF COMPONENT
-  useEffect(() => {
-    dispatch({ type: 'GET_ALL_ATTRIBUTES' });
-  }, [dispatch]);
-
   // LOCAL STATE
   const [attrState, setAttrState] = useState({
     isAdding: false,
@@ -17,6 +12,11 @@ function CreatureAttributes(props) {
   const dispatch = useDispatch();
   const creatureDetails = useSelector((store) => store.creatureDetails);
   const allAttributes = useSelector((store) => store.allAttributes);
+
+  // ON MOUNT OF COMPONENT
+  useEffect(() => {
+    dispatch({ type: 'GET_ALL_ATTRIBUTES' });
+  }, [dispatch]);
 
   const handleClickDeleteAttr = (attribute) => (event) => {
     dispatch({
