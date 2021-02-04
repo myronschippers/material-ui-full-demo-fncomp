@@ -16,8 +16,12 @@ function App() {
     <Router>
       <AppLayout>
         <Route exact path="/" component={Home} />
-        <Route exact path="/creature-details/:id" component={Details} />
-        <Route exact path="/creature-edit/:id" component={Edit} />
+        <Route exact path="/creature-details/:id">
+          <Details />
+        </Route>
+        <Route exact path="/creature-edit/:id">
+          <Edit />
+        </Route>
       </AppLayout>
     </Router>
   );
