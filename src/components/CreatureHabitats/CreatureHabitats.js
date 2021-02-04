@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import mapStoreToProps from '../../redux/mapStoreToProps';
 
 function CreatureHabitats(props) {
   // LOCAL STATE
@@ -133,6 +132,4 @@ function CreatureHabitats(props) {
   );
 }
 
-export default connect(mapStoreToProps('allHabitats', 'creatureDetails'))(
-  CreatureHabitats
-);
+export default CreatureHabitats;

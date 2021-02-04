@@ -10,18 +10,16 @@ function AlertMessages() {
     dispatch({ type: 'CLEAR_ERROR' });
   };
 
-  render() {
-    return (
-      <div className={styles.alertFrame}>
-        {error.message &&
-          <div className={styles.alertPanel}>
-            {error.message}
-            <button onClick={closeError}>close</button>
-          </div>
-        }
-      </div>
-    );
-  }
+  return (
+    <div className={styles.alertFrame}>
+      {error.message && (
+        <div className={styles.alertPanel}>
+          {error.message}
+          <button onClick={closeError}>close</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default AlertMessages;
