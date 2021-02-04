@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import mapStoreToProps from '../../../redux/mapStoreToProps';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 
 // CUSTOM COMPONENT
 import AlertMessages from '../../AlertMessages/AlertMessages';
@@ -8,34 +8,45 @@ import CreatureHabitats from '../../CreatureHabitats/CreatureHabitats';
 import CreatureAttributes from '../../CreatureAttributes/CreatureAttributes';
 import TypeEditor from '../../TypeEditor/TypeEditor';
 
-class Edit extends Component {
-  state = {
+function Edit(props) {
+  // LOCAL STATE
+  const [editState, setEditState] = useState({
     hasEdited: false,
     edit_img_path: '',
-  }
+    form: {
+      name: '',
+      img_path: '',
+      physical_description: '',
+      background: '',
+    },
+  });
+  // GLOBAL STATE
+  const dispatch = useDispatch();
+  const creatureDetails = useSelector((store) => store.creatureDetails);
 
-  componentDidMount() {
-    if (!this.props.store.creatureDetails.id
-      || this.props.store.creatureDetails.id !== this.props.match.params.id
-    ) {
-      this.props.dispatch({
+  const urlParams = useParams();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!creatureDetails.id || creatureDetails.id !== urlParams.id) {
+      dispatch({
         type: 'GET_CREATURE_DETAILS',
-        payload: parseInt(this.props.match.params.id),
+        payload: parseInt(urlParams.id),
       });
     }
-  }
+  }, [dispatch]);
 
   /**
    * Scan through the current state and extract only updated values.
    * @returns {object}
    */
-  assembleEditedValues() {
-    const possibleValueKeys = Object.keys(this.props.store.creatureDetails);
+  function assembleEditedValues() {
+    const possibleValueKeys = Object.keys(creatureDetails);
     const editedValues = {};
 
     for (let fieldKey of possibleValueKeys) {
-      const currentValue = this.state.form[fieldKey];
-      const storedValue = this.props.store.creatureDetails[fieldKey];
+      const currentValue = editState.form[fieldKey];
+      const storedValue = creatureDetails[fieldKey];
 
       if (currentValue && currentValue !== storedValue) {
         editedValues[fieldKey] = currentValue;
@@ -45,154 +56,134 @@ class Edit extends Component {
     return editedValues;
   }
 
-  handleSubmitEdit = (event) => {
+  const handleSubmitEdit = (event) => {
     event.preventDefault();
-    const onlyEditedValues = this.assembleEditedValues();
+    const onlyEditedValues = assembleEditedValues();
     const allCreatureData = {
-      ...this.props.store.creatureDetails,
+      ...creatureDetails,
       ...onlyEditedValues,
     };
 
-    this.props.dispatch({
+    dispatch({
       type: 'UPDATE_CREATURE_DETAILS',
       payload: allCreatureData,
     });
-    this.props.history.push(`/creature-details/${allCreatureData.id}`);
-  }
+    history.push(`/creature-details/${allCreatureData.id}`);
+  };
 
-  changeType = (newTypeId) => {
-    this.handleChangeField('type_id')({ target: { value: newTypeId } });
-  }
+  const changeType = (newTypeId) => {
+    handleChangeField('type_id')({ target: { value: newTypeId } });
+  };
 
-  handleChangeField = (fieldKey) => (event) => {
+  const handleChangeField = (fieldKey) => (event) => {
     const enteredValue = event.target.value;
-    let imageFile = this.props.store.creatureDetails.img_path;
+    let imageFile = creatureDetails.img_path;
 
-    if (fieldKey === 'img_path'
-      && (
-        enteredValue.indexOf('.jpg') !== -1
-        || enteredValue.indexOf('.jpeg') !== -1
-        || enteredValue.indexOf('.png') !== -1
-        || enteredValue.indexOf('.gif') !== -1
-      )
+    if (
+      fieldKey === 'img_path' &&
+      (enteredValue.indexOf('.jpg') !== -1 ||
+        enteredValue.indexOf('.jpeg') !== -1 ||
+        enteredValue.indexOf('.png') !== -1 ||
+        enteredValue.indexOf('.gif') !== -1)
     ) {
       imageFile = enteredValue;
     }
 
-    this.setState({
+    setEditState({
       hasEdited: true,
       edit_img_path: imageFile,
       form: {
-        ...this.state.form,
-        [fieldKey]: enteredValue
-      }
+        ...editState.form,
+        [fieldKey]: enteredValue,
+      },
     });
+  };
+
+  const handleClickToBack = () => {
+    const creatureId = urlParams.id;
+    history.push(`/creature-details/${creatureId}`);
+  };
+
+  let editableImgPath = creatureDetails.img_path;
+
+  if (editState.edit_img_path) {
+    editableImgPath = editState.edit_img_path;
   }
 
-  handleClickToBack = () => {
-    const creatureId = this.props.match.params.id;
-    this.props.history.push(`/creature-details/${creatureId}`);
-  }
-
-  render() {
-    const {
-      creatureDetails
-    } = this.props.store;
-
-    let editableImgPath = this.props.store.creatureDetails.img_path;
-
-    if (this.state.edit_img_path) {
-      editableImgPath = this.state.edit_img_path;
-    }
-
-    return (
+  return (
+    <div>
       <div>
+        <h2>Edit Creature Details</h2>
+        <button type="button" className="btn" onClick={handleClickToBack}>
+          BACK TO DETAILS
+        </button>
+      </div>
+      <form onSubmit={handleSubmitEdit}>
+        <label className="vr vr_x2">
+          <div>Name:</div>
+          <input
+            type="text"
+            placeholder="Creature Name"
+            defaultValue={creatureDetails.name}
+            onChange={handleChangeField('name')}
+          />
+        </label>
+        <TypeEditor
+          typeId={creatureDetails.type_id}
+          changeCallback={changeType}
+        />
+        <div className="vr">
+          {editableImgPath && (
+            <img src={`images/${editableImgPath}`} alt={creatureDetails.name} />
+          )}
+        </div>
+        <label className="vr vr_x2">
+          <div>Image File Name:</div>
+          <input
+            type="text"
+            placeholder="Enter File Name:"
+            defaultValue={creatureDetails.img_path}
+            onChange={handleChangeField('img_path')}
+          />
+        </label>
+        <label className="vr vr_x2">
+          <div>Physical Description:</div>
+          <textarea
+            placeholder="What does the creature look like?"
+            defaultValue={creatureDetails.physical_description}
+            onChange={handleChangeField('physical_description')}
+          ></textarea>
+        </label>
+        <label className="vr vr_x2">
+          <div>Background:</div>
+          <textarea
+            placeholder="What does the creature look like?"
+            defaultValue={creatureDetails.background}
+            onChange={handleChangeField('background')}
+          ></textarea>
+        </label>
+
+        <div className="vr vr_x2">
+          <CreatureAttributes
+            editable
+            attributes={creatureDetails.attributes}
+          />
+        </div>
+
+        <div className="vr vr_x2">
+          <CreatureHabitats editable habitats={creatureDetails.habitats} />
+        </div>
+
         <div>
-          <h2>Edit Creature Details</h2>
-          <button
-            type="button"
-            className="btn"
-            onClick={this.handleClickToBack}
-          >
-            BACK TO DETAILS
+          <button className="btn" disabled={!editState.hasEdited}>
+            SAVE CHANGES
           </button>
         </div>
-        <form onSubmit={this.handleSubmitEdit}>
-          <label className="vr vr_x2">
-            <div>Name:</div>
-            <input
-              type="text"
-              placeholder="Creature Name"
-              defaultValue={creatureDetails.name}
-              onChange={this.handleChangeField('name')}
-            />
-          </label>
-          <TypeEditor
-            typeId={creatureDetails.type_id}
-            changeCallback={this.changeType}
-          />
-          <div className="vr">
-            {editableImgPath &&
-              <img
-                src={`images/${editableImgPath}`}
-                alt={creatureDetails.name}
-              />
-            }
-          </div>
-          <label className="vr vr_x2">
-            <div>Image File Name:</div>
-            <input
-              type="text"
-              placeholder="Enter File Name:"
-              defaultValue={creatureDetails.img_path}
-              onChange={this.handleChangeField('img_path')}
-            />
-          </label>
-          <label className="vr vr_x2">
-            <div>Physical Description:</div>
-            <textarea
-              placeholder="What does the creature look like?"
-              defaultValue={creatureDetails.physical_description}
-              onChange={this.handleChangeField('physical_description')}
-            ></textarea>
-          </label>
-          <label className="vr vr_x2">
-            <div>Background:</div>
-            <textarea
-              placeholder="What does the creature look like?"
-              defaultValue={creatureDetails.background}
-              onChange={this.handleChangeField('background')}
-            ></textarea>
-          </label>
+      </form>
 
-          <div className="vr vr_x2">
-            <CreatureAttributes
-              editable
-              attributes={creatureDetails.attributes}
-            />
-          </div>
-
-          <div className="vr vr_x2">
-            <CreatureHabitats
-              editable
-              habitats={creatureDetails.habitats}
-            />
-          </div>
-
-          <div>
-            <button
-              className="btn"
-              disabled={!this.state.hasEdited}
-            >
-              SAVE CHANGES
-            </button>
-          </div>
-        </form>
-
-        <AlertMessages />
-      </div>
-    );
-  }
+      <AlertMessages />
+    </div>
+  );
 }
 
-export default connect(mapStoreToProps('creatureDetails'))(Edit);
+export default Edit;
