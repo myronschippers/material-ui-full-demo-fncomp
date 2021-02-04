@@ -1,89 +1,60 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-class CreatureForm extends Component {
-  state = {
+function CreatureForm() {
+  const [formFields, setFormFields] = useState({
     enteredName: '',
     enteredOrigin: '',
-  }
+  });
+  const dispatch = useDispatch();
 
-  handleClickAdd = () => {
-    // this.props.addCreature({
-    //   name: this.state.enteredName,
-    //   origin: this.state.enteredOrigin,
-    // });
+  const handleClickAdd = () => {
     // dispatch to redux
-    this.props.dispatch({
+    dispatch({
       type: 'ADD_TO_CREATURE_LIST',
       payload: {
-        name: this.state.enteredName,
-        origin: this.state.enteredOrigin,
+        name: formFields.enteredName,
+        origin: formFields.enteredOrigin,
       },
     });
 
-    this.setState({
+    setFormFields({
       enteredName: '',
       enteredOrigin: '',
-    })
-  }
+    });
+  };
 
-  // handleChangeName = (event) => {
-  //   this.setState({
-  //     enteredName: event.target.value
-  //   })
-  // }
+  const handleAllChange = (fieldKey) => (event) => {
+    setFormFields({
+      ...formFields,
+      [fieldKey]: event.target.value,
+    });
+  };
 
-  // handleChangeOrigin = (event) => {
-  //   this.setState({
-  //     enteredOrigin: event.target.value
-  //   })
-  // }
-
-  // handleAllChange = (event, fieldKey) => {
-  //   this.setState({
-  //     [fieldKey]: event.target.value
-  //   })
-  // }
-
-  handleAllChange = (fieldKey) => {
-    console.log('fieldKey', fieldKey);
-    return (event) => {
-      console.log('value:', event.target.value);
-      this.setState({
-        [fieldKey]: event.target.value
-      })
-    }
-  }
-
-  render() {
-    return (
-      <div className="stackBlock">
-        <h2>Add a New Creature</h2>
-        <div className="formWrap">
-          <input
-            className="field"
-            type="text"
-            placeholder="Creature Name"
-            onChange={this.handleAllChange('enteredName')}
-            value={this.state.enteredName}
-          />
-          <input
-            className="field"
-            type="text"
-            placeholder="Creature Origin"
-            onChange={this.handleAllChange('enteredOrigin')}
-            value={this.state.enteredOrigin}
-          />
-          <button
-            className="btn"
-            onClick={this.handleClickAdd}
-          >
-            ADD CREATURE
-          </button>
-        </div>
+  return (
+    <div className="stackBlock">
+      <h2>Add a New Creature</h2>
+      <div className="formWrap">
+        <input
+          className="field"
+          type="text"
+          placeholder="Creature Name"
+          onChange={handleAllChange('enteredName')}
+          value={formFields.enteredName}
+        />
+        <input
+          className="field"
+          type="text"
+          placeholder="Creature Origin"
+          onChange={handleAllChange('enteredOrigin')}
+          value={formFields.enteredOrigin}
+        />
+        <button className="btn" onClick={handleClickAdd}>
+          ADD CREATURE
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-export default connect()(CreatureForm);
+export default CreatureForm;
