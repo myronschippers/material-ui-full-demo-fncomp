@@ -18,6 +18,7 @@ function Edit(props) {
       img_path: '',
       physical_description: '',
       background: '',
+      type_id: null,
     },
   });
   // GLOBAL STATE
@@ -34,7 +35,7 @@ function Edit(props) {
         payload: parseInt(urlParams.id),
       });
     }
-  }, [dispatch, creatureDetails, urlParams]);
+  }, []);
 
   /**
    * Scan through the current state and extract only updated values.
@@ -72,12 +73,14 @@ function Edit(props) {
   };
 
   const changeType = (newTypeId) => {
+    console.log('Edit view, newTypeId:', newTypeId);
     handleChangeField('type_id')({ target: { value: newTypeId } });
   };
 
   const handleChangeField = (fieldKey) => (event) => {
     const enteredValue = event.target.value;
     let imageFile = creatureDetails.img_path;
+    console.log('Edit view, fieldKey:', fieldKey);
 
     if (
       fieldKey === 'img_path' &&
@@ -88,6 +91,7 @@ function Edit(props) {
     ) {
       imageFile = enteredValue;
     }
+    console.log('Edit view, enteredValue:', enteredValue);
 
     setEditState({
       hasEdited: true,
@@ -129,7 +133,8 @@ function Edit(props) {
           />
         </label>
         <TypeEditor
-          typeId={creatureDetails.type_id}
+          defaultId={creatureDetails.type_id}
+          typeId={editState.form.type_id}
           changeCallback={changeType}
         />
         <div className="vr">

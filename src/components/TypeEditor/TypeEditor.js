@@ -20,29 +20,28 @@ function TypeEditor(props) {
   const handleChangeTypeSelection = (event) => {
     const newId = parseInt(event.target.value);
 
-    setEditorState(
-      {
-        selectedType: newId,
-      },
-      () => {
-        if (
-          this.props.typeId &&
-          newId !== this.props.typeId &&
-          this.props.changeCallback
-        ) {
-          props.changeCallback(newId);
-        }
-      }
-    );
+    if (props.typeId && newId !== props.typeId && props.changeCallback) {
+      console.log('TypeEditor, newId:', newId);
+      props.changeCallback(newId);
+    }
+
+    setEditorState({
+      selectedType: newId,
+    });
   };
 
-  function matchTypeById(typeId) {
-    if (!typeId || typeId === ' ') {
+  function matchTypeById(typeId, defaultId) {
+    let matchId = typeId != null ? typeId : defaultId;
+    console.log('TypeEditor, matchTypeById - typeId:', typeId);
+    console.log('TypeEditor, matchTypeById - defaultId:', defaultId);
+    console.log('TypeEditor, matchTypeById - matchId:', matchId);
+
+    if (!matchId || matchId === ' ') {
       return null;
     }
 
     const matchList = allTypes.filter((item, index) => {
-      return item.id === typeId;
+      return item.id === matchId;
     });
 
     return matchList[0];
@@ -50,12 +49,12 @@ function TypeEditor(props) {
 
   const handleClickToSelect = (event) => {
     setEditorState({
-      selectedType: props.typeId,
+      selectedType: props.typeId != null ? props.typeId : props.defaultId,
       isSelecting: true,
     });
   };
 
-  const definedType = matchTypeById(props.typeId);
+  const definedType = matchTypeById(props.typeId, props.defaultId);
 
   return (
     <label className="vr vr_x2">
