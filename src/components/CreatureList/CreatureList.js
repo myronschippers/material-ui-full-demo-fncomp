@@ -1,36 +1,33 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import mapStoreToProps from '../../redux/mapStoreToProps';
 
 // CUSTOM COMPONENTS
 import CreatureListItem from '../CreatureListItem/CreatureListItem';
 
-class CreatureList extends Component {
-  componentDidMount() {
-    this.props.dispatch({
+function CreatureList(props) {
+  const dispatch = useDispatch();
+  const creatureList = useSelector((store) => store.creatureList);
+
+  useEffect(() => {
+    dispatch({
       type: 'GET_CREATURES',
     });
-  }
+  }, [dispatch]);
 
-  render() {
-    return (
-      <div className="stackBlock">
-        <ul className="blocks">
-          {this.props.store.creatureList.map((item, index) => {
-            return (
-              <li key={index}>
-                <CreatureListItem
-                  creature={item}
-                  index={index}
-                  {...this.props}
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
-  }
+  return (
+    <div className="stackBlock">
+      <ul className="blocks">
+        {creatureList.map((item, index) => {
+          return (
+            <li key={index}>
+              <CreatureListItem creature={item} index={index} {...props} />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
 }
 
-export default connect(mapStoreToProps('creatureList'))(CreatureList);
+export default CreatureList;
