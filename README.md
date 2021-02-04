@@ -9,7 +9,7 @@ This repository is meant to act as a demonstration of how to customize an applic
 ## Branching Structure
 
 ```
-- • - master
+- • - main
   |
   •
   | \
