@@ -15,7 +15,7 @@ function TypeEditor(props) {
     dispatch({
       type: 'GET_ALL_TYPES',
     });
-  }, [dispatch]);
+  }, []);
 
   const handleChangeTypeSelection = (event) => {
     const newId = parseInt(event.target.value);

@@ -12,7 +12,7 @@ function CreatureList(props) {
     dispatch({
       type: 'GET_CREATURES',
     });
-  }, [dispatch]);
+  }, []);
 
   return (
     <div className="stackBlock">

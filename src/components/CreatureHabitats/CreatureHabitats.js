@@ -15,7 +15,7 @@ function CreatureHabitats(props) {
   // COMPONENT HAS BEEN MOUNTED
   useEffect(() => {
     dispatch({ type: 'GET_ALL_HABITATS' });
-  }, [dispatch]);
+  }, []);
 
   const handleClickDeleteHabitat = (habitat) => (event) => {
     dispatch({

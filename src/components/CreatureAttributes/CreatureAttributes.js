@@ -15,7 +15,7 @@ function CreatureAttributes(props) {
   // ON MOUNT OF COMPONENT
   useEffect(() => {
     dispatch({ type: 'GET_ALL_ATTRIBUTES' });
-  }, [dispatch]);
+  }, []);
 
   const handleClickDeleteAttr = (attribute) => (event) => {
     dispatch({
