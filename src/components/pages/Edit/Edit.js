@@ -34,7 +34,7 @@ function Edit(props) {
         payload: parseInt(urlParams.id),
       });
     }
-  }, [dispatch]);
+  }, [dispatch, creatureDetails, urlParams]);
 
   /**
    * Scan through the current state and extract only updated values.

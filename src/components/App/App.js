@@ -6,7 +6,7 @@ import { HashRouter as Router, Route } from 'react-router-dom';
 import AppLayout from '../AppLayout/AppLayout';
 import Home from '../pages/Home/Home';
 import Details from '../pages/Details/Details';
-// import Edit from '../pages/Edit/Edit';
+import Edit from '../pages/Edit/Edit';
 
 function App() {
   return (
@@ -16,9 +16,9 @@ function App() {
         <Route exact path="/creature-details/:id">
           <Details />
         </Route>
-        {/* <Route exact path="/creature-edit/:id">
+        <Route exact path="/creature-edit/:id">
           <Edit />
-        </Route> */}
+        </Route>
       </AppLayout>
     </Router>
   );
