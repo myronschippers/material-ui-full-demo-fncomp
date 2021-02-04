@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { HashRouter as Router, Route } from 'react-router-dom';
 
 // CUSTOM COMPONENTS
@@ -10,7 +10,7 @@ import Details from '../pages/Details/Details';
 import Edit from '../pages/Edit/Edit';
 
 function App() {
-  const secondReducer = useStore('secondReducer');
+  const secondReducer = useSelector((store) => store.secondReducer);
 
   return (
     <Router>
