@@ -1,25 +1,16 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-// CUSTOM COMPONENTS
+function CheckoutList() {
+  const checkoutReducer = useSelector((store) => store.checkoutReducer);
 
-
-class CheckoutList extends Component {
-  render() {
-    return (
-      <div>
-        {this.props.store.checkoutReducer.map((item, index) => {
-          return <p key={index}>{item.name}</p>
-        })}
-      </div>
-    );
-  }
+  return (
+    <div>
+      {checkoutReducer.map((item, index) => {
+        return <p key={index}>{item.name}</p>;
+      })}
+    </div>
+  );
 }
 
-
-const putStoreOnProps = (store) => {
-  return {
-    store: store,
-  };
-};
-export default connect(putStoreOnProps)(CheckoutList);
+export default CheckoutList;
