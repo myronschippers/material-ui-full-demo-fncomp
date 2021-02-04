@@ -1,129 +1,122 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import mapStoreToProps from '../../redux/mapStoreToProps';
 
-class CreatureAttributes extends Component {
-  state = {
+function CreatureAttributes(props) {
+  // ON MOUNT OF COMPONENT
+  useEffect(() => {
+    dispatch({ type: 'GET_ALL_ATTRIBUTES' });
+  }, [dispatch]);
+
+  // LOCAL STATE
+  const [attrState, setAttrState] = useState({
     isAdding: false,
     newAttributeId: '',
-  }
+  });
+  // GLOBAL STATE
+  const dispatch = useDispatch();
+  const creatureDetails = useSelector((store) => store.creatureDetails);
+  const allAttributes = useSelector((store) => store.allAttributes);
 
-  componentDidMount() {
-    this.props.dispatch({ type: 'GET_ALL_ATTRIBUTES' });
-  }
-
-  handleClickDeleteAttr = (attribute) => (event) => {
-    this.props.dispatch({
+  const handleClickDeleteAttr = (attribute) => (event) => {
+    dispatch({
       type: 'DELETE_CREATURE_ATTRIBUTE',
       payload: {
-        attribute: this.matchAvailableAttributes(attribute),
-        creatureId: this.props.store.creatureDetails.id,
+        attribute: matchAvailableAttributes(attribute),
+        creatureId: creatureDetails.id,
       },
     });
-  }
+  };
 
-  matchAvailableAttributes(attributeTag) {
-    const allAttributes = this.props.store.allAttributes;
-    const matchedAttributes = allAttributes.filter(item => attributeTag === item.tag);
+  function matchAvailableAttributes(attributeTag) {
+    const matchedAttributes = allAttributes.filter(
+      (item) => attributeTag === item.tag
+    );
     return matchedAttributes[0];
   }
 
-  handleClickAddAttribute = () => {
-    this.props.dispatch({
+  const handleClickAddAttribute = () => {
+    dispatch({
       type: 'SAVE_CREATURE_ATTRIBUTE',
       payload: {
-        attributeId: this.state.newAttributeId,
-        creatureId: this.props.store.creatureDetails.id
-      }
+        attributeId: attrState.newAttributeId,
+        creatureId: creatureDetails.id,
+      },
     });
-    this.toggleAdd();
-  }
+    toggleAdd();
+  };
 
-  handleChangeSelection = (event) => {
-    this.setState({
-      newAttributeId: parseInt(event.target.value)
+  const handleChangeSelection = (event) => {
+    setAttrState({
+      newAttributeId: parseInt(event.target.value),
     });
-  }
+  };
 
-  toggleAdd = () => {
+  const toggleAdd = () => {
     console.log('Toggle Add');
-    this.setState({
-      isAdding: !this.state.isAdding,
-      newAttributeId: !this.state.isAdding ? '' : this.state.newAttributeId,
-    })
-  }
-
-  render() {
-    const {
-      attributes,
-      editable,
-    } = this.props;
-    const selectableOptions = this.props.store.allAttributes.filter((attrOpt, index) => {
-      let matchWithSaved = attributes.filter(attrSaved => attrOpt.tag === attrSaved);
-      return matchWithSaved.length === 0;
+    setAttrState({
+      isAdding: !attrState.isAdding,
+      newAttributeId: !attrState.isAdding ? '' : attrState.newAttributeId,
     });
+  };
 
-    return (
-      <div>
-        <h4>Attributes:</h4>
-        <ul className="blocks">
-          {attributes.map((item, index) => {
-            return (
-              <li key={index}>
-                {item}
-                {editable &&
-                  <button
-                    type="button"
-                    onClick={this.handleClickDeleteAttr(item)}
-                  >
-                    x
-                  </button>
-                }
-              </li>
-            );
-          })}
-          {editable && !this.state.isAdding &&
-            <li>
-              <button
-                type="button"
-                onClick={this.toggleAdd}
-              >
-                ADD
-              </button>
-            </li>
-          }
-        </ul>
-        {this.state.isAdding &&
-          <div>
-            <select
-              onChange={this.handleChangeSelection}
-            >
-              <option value="">Select an Attribute</option>
-              {selectableOptions.map((item, index) => {
-                return (
-                  <option
-                    key={index}
-                    value={item.id}
-                  >
-                    {item.tag}
-                  </option>
-                );
-              })}
-            </select>
-            <div>
-              <button
-                type="button"
-                className="btn"
-                onClick={this.handleClickAddAttribute}
-              >
-                Add Attribute
-              </button>
-            </div>
-          </div>
-        }
-      </div>
+  const { attributes, editable } = props;
+  const selectableOptions = allAttributes.filter((attrOpt, index) => {
+    let matchWithSaved = attributes.filter(
+      (attrSaved) => attrOpt.tag === attrSaved
     );
-  }
+    return matchWithSaved.length === 0;
+  });
+
+  return (
+    <div>
+      <h4>Attributes:</h4>
+      <ul className="blocks">
+        {attributes.map((item, index) => {
+          return (
+            <li key={index}>
+              {item}
+              {editable && (
+                <button type="button" onClick={handleClickDeleteAttr(item)}>
+                  x
+                </button>
+              )}
+            </li>
+          );
+        })}
+        {editable && !attrState.isAdding && (
+          <li>
+            <button type="button" onClick={toggleAdd}>
+              ADD
+            </button>
+          </li>
+        )}
+      </ul>
+      {attrState.isAdding && (
+        <div>
+          <select onChange={handleChangeSelection}>
+            <option value="">Select an Attribute</option>
+            {selectableOptions.map((item, index) => {
+              return (
+                <option key={index} value={item.id}>
+                  {item.tag}
+                </option>
+              );
+            })}
+          </select>
+          <div>
+            <button
+              type="button"
+              className="btn"
+              onClick={handleClickAddAttribute}
+            >
+              Add Attribute
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default connect(mapStoreToProps('allAttributes', 'creatureDetails'))(CreatureAttributes);
+export default CreatureAttributes;
