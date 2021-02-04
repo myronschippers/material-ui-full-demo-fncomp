@@ -36,7 +36,7 @@ This repository is meant to act as a demonstration of how to customize an applic
 ```
 
 **Branch Details:**
-1. `master`
+1. `main`
     - fully functional application with no material-ui
 1. `develop`
     - completely customized application leveraging material-ui, core behavior remains the same
